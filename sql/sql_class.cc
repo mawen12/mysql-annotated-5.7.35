@@ -1606,7 +1606,8 @@ void THD::init(void)
 
 void THD::init_for_queries(Relay_log_info *rli)
 {
-  set_time(); 
+  set_time();
+  // 告诉存储引擎准备好事务
   ha_enable_transaction(this,TRUE);
 
   reset_root_defaults(mem_root, variables.query_alloc_block_size,

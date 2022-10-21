@@ -48,7 +48,7 @@ protected:
   uint field_count;
   uint sending_flags;
   ulong packet_length;
-  uchar *raw_packet;
+  uchar *raw_packet; // 网络数据包，字符数组，存了其内存起始地址、及数据包长度
   CHARSET_INFO *result_cs;
 #ifndef EMBEDDED_LIBRARY
   bool net_store_data(const uchar *from, size_t length);

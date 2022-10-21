@@ -817,6 +817,7 @@ int Protocol_classic::read_packet()
   {
     assert(!m_thd->net.error);
     bad_packet= false;
+    // 记录数据包的内容起始地址
     raw_packet= m_thd->net.read_pos;
     return 0;
   }
@@ -828,7 +829,7 @@ int Protocol_classic::read_packet()
   return ret;
 }
 
-
+// 不同的命令，不同的网络数据包格式，最终都解析到COM_DATA中
 bool Protocol_classic::parse_packet(union COM_DATA *data,
                                     enum_server_command cmd)
 {
@@ -969,6 +970,7 @@ bool Protocol_classic::create_command(COM_DATA *com_data,
 int Protocol_classic::get_command(COM_DATA *com_data, enum_server_command *cmd)
 {
   // read packet from the network
+  // 从网络中读取数据包
   if(int rc= read_packet())
     return rc;
 
@@ -989,6 +991,7 @@ int Protocol_classic::get_command(COM_DATA *com_data, enum_server_command *cmd)
   /* Do not rely on my_net_read, extra safety against programming errors. */
   raw_packet[packet_length]= '\0';                  /* safety */
 
+  // 数据包的第一个字节为命令
   *cmd= (enum enum_server_command) raw_packet[0];
 
   if (*cmd >= COM_END)
@@ -999,6 +1002,7 @@ int Protocol_classic::get_command(COM_DATA *com_data, enum_server_command *cmd)
   packet_length--;
   raw_packet++;
 
+  // 从网络数据包中解析不同命令的数据格式
   return parse_packet(com_data, *cmd);
 }
 

@@ -321,7 +321,7 @@ extern "C" void *handle_connection(void *arg)
     // 将THD添加到全局THD管理器中
     thd_manager->add_thd(thd);
 
-    // 准备连接，以达到处理客户端请求的状态，包含登录验证
+    // 准备连接，以达到处理客户端请求的状态，包含登录验证、用户连接管理
     if (thd_prepare_connection(thd))
       handler_manager->inc_aborted_connects();
     else

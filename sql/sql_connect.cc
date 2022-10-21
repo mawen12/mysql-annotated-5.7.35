@@ -75,6 +75,7 @@ using std::max;
 #ifndef NO_EMBEDDED_ACCESS_CHECKS
 static HASH hash_user_connections;
 
+// 获取/创建用户连接管理，同一个用户等所有连接都会在此有个统计
 int get_or_create_user_conn(THD *thd, const char *user,
                             const char *host,
                             const USER_RESOURCES *mqh)
@@ -205,6 +206,7 @@ end:
 
 /*
   Decrease user connection count
+  当前用户的连接数-1
 
   SYNOPSIS
     decrease_user_connections()
@@ -238,6 +240,7 @@ void decrease_user_connections(USER_CONN *uc)
 /*
    Decrements user connections count from the USER_CONN held by THD
    And removes USER_CONN from the hash if no body else is using it.
+   释放用户连接
 
    SYNOPSIS
      release_user_connection()
@@ -270,6 +273,7 @@ void release_user_connection(THD *thd)
 /*
   Check if maximum queries per hour limit has been reached
   returns 0 if OK.
+  检查用户资源统计，比如是否已达每小时最大查询数限制
 */
 
 bool check_mqh(THD *thd, uint check_command)
@@ -380,7 +384,7 @@ void free_max_user_conn(void)
 #endif /* NO_EMBEDDED_ACCESS_CHECKS */
 }
 
-
+// 重置用户资源统计数据，比如每小时最大查询数
 void reset_mqh(LEX_USER *lu, bool get_them= 0)
 {
 #ifndef NO_EMBEDDED_ACCESS_CHECKS
@@ -425,6 +429,7 @@ void reset_mqh(LEX_USER *lu, bool get_them= 0)
 
 /**
   Set thread character set variables from the given ID
+  设置客户端字符集
 
   @param  thd         thread handle
   @param  cs_number   character set and collation ID
@@ -778,6 +783,7 @@ static bool login_connection(THD *thd)
 
 /*
   Close an established connection
+  结束一个已存在的连接
 
   NOTES
     This mainly updates status variables
@@ -835,6 +841,7 @@ static void prepare_new_connection_state(THD* thd)
     net->compress=1;        // Use compression
 
   // Initializing session system variables.
+  // 初始化一些SESSION级别的系统变量
   alloc_and_copy_thd_dynamic_variables(thd, true);
 
   /*
@@ -843,7 +850,7 @@ static void prepare_new_connection_state(THD* thd)
     TODO: refactor this to avoid code duplication there
   */
   thd->proc_info= 0;
-  thd->set_command(COM_SLEEP);
+  thd->set_command(COM_SLEEP); // 模拟SLEEP命令，并在下方进行初始执行
   thd->set_time();
   thd->init_for_queries();
 
@@ -899,11 +906,12 @@ static void prepare_new_connection_state(THD* thd)
 
     thd->proc_info=0;
     thd->set_time();
+    // 初始化查询相关工作
     thd->init_for_queries();
   }
 }
 
-
+// 连接开始正式工作前的一些预备工作
 bool thd_prepare_connection(THD *thd)
 {
   bool rc;
@@ -927,6 +935,7 @@ bool thd_prepare_connection(THD *thd)
 
 /**
   Close a connection.
+  关闭一个连接
 
   @param thd        Thread handle.
   @param sql_errno  The error code to send before disconnect.
@@ -962,7 +971,7 @@ void close_connection(THD *thd, uint sql_errno,
   DBUG_VOID_RETURN;
 }
 
-
+// 判断连接是否存活
 bool thd_connection_alive(THD *thd)
 {
   NET *net= thd->get_protocol_classic()->get_net();

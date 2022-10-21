@@ -968,6 +968,8 @@ bool do_command(THD *thd)
     See init_net_server_extension()
   */
   thd->m_server_idle= true;
+  // 从指定协议，读取命令及命令数据
+  // 支持多种协议，不同的协议读取数据不一样，Protocol_callback / Protocol_classic / Protocol_local
   rc= thd->get_protocol()->get_command(&com_data, &command);
   thd->m_server_idle= false;
 
@@ -1029,6 +1031,7 @@ bool do_command(THD *thd)
   if (classic)
     my_net_set_read_timeout(net, thd->variables.net_read_timeout);
 
+  // 分发执行不同类型的命令
   return_value= dispatch_command(thd, &com_data, command);
   thd->get_protocol_classic()->get_packet()->shrink(
       thd->variables.net_buffer_length);

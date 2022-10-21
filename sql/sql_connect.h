@@ -58,6 +58,7 @@ typedef struct user_resources {
 /*
   This structure is used for counting resources consumed and for checking
   them against specified user limits.
+  统计一个用户所使用的资源
 */
 typedef struct user_conn {
   /*
@@ -77,13 +78,16 @@ typedef struct user_conn {
   /* Total length of the key. */
   size_t len;
   /* Current amount of concurrent connections for this account. */
+  /* 当前账号总共有多少活跃连接 */
   uint connections;
   /*
      Current number of connections per hour, number of updating statements
      per hour and total number of statements per hour for this account.
+     当前的每小时执行语句和UPDATE语句的数量统计
   */
   uint conn_per_hour, updates, questions;
   /* Maximum amount of resources which account is allowed to consume. */
+  /* 该账号累计使用了多少资源 */
   USER_RESOURCES user_resources;
 } USER_CONN;
 

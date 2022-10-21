@@ -904,6 +904,7 @@ error:
 /**
   Read a packet from the client/server and return it without the internal
   package header.
+  从网络数据包中读取数据
 
   If the packet is the first packet of a multi-packet packet
   (which is indicated by the length of the packet = 0xffffff) then
@@ -925,6 +926,7 @@ my_net_read(NET *net)
   MYSQL_NET_READ_START();
 
 #ifdef HAVE_COMPRESS
+  // 没有使用压缩
   if (!net->compress)
   {
 #endif
@@ -954,6 +956,7 @@ my_net_read(NET *net)
   else
   {
     /* We are using the compressed protocol */
+    // 使用了压缩协议
 
     size_t buf_length;
     ulong start_of_packet;
@@ -1035,11 +1038,13 @@ my_net_read(NET *net)
       }
 
       net->where_b=buf_length;
+      // 每次读取NET_HEADER_SIZE长度的数据
       if ((packet_len= net_read_packet(net, &complen)) == packet_error)
       {
         MYSQL_NET_READ_DONE(1, 0);
         return packet_error;
       }
+      // 数据解压缩
       if (my_uncompress(net->buff + net->where_b, packet_len,
                         &complen))
       {
