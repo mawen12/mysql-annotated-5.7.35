@@ -5428,6 +5428,8 @@ void mysql_init_multi_delete(LEX *lex)
 /**
   Parse a query.
 
+  @chinese 调用 Parser 模块解析查询
+
   @param       thd     Current thread
   @param       rawbuf  Begining of the query text
   @param       length  Length of the query text
@@ -7039,6 +7041,8 @@ extern int MYSQLparse(class THD *thd); // from sql_yacc.cc
 /**
   This is a wrapper of MYSQLparse(). All the code should call parse_sql()
   instead of MYSQLparse().
+
+  @chinese 执行具体的语法分析操作
 
   As a by product of parsing, the parser can also generate a query digest.
   To compute a digest, invoke this function as follows.

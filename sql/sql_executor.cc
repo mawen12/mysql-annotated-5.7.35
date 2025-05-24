@@ -93,6 +93,8 @@ static bool cmp_buffer_with_ref(THD *thd, TABLE *table, TABLE_REF *tab_ref);
 /**
   Execute select, executor entry point.
 
+  @see 执行查询的核心逻辑，如果设计到表扫描，者调用存储引擎的接口进行数据访问
+
   @todo
     When can we have here thd->net.report_error not zero?
 

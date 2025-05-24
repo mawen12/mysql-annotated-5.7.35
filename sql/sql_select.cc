@@ -69,6 +69,8 @@ uint find_shortest_key(TABLE *table, const key_map *usable_keys);
 /**
   Handle a data manipulation query, from preparation through cleanup
 
+  @chinese 处理数据查询操作，即处理SELECT查询
+
   @param thd       thread handler
   @param lex       query to be processed
   @param result    sink of result of query execution.
